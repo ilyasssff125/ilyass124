@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>تطبيق الشحن - مراكش ستور</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Amiri', serif;
+    background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    direction: rtl;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(183, 87, 24, 0.85);
+    z-index: -1;
+  }
+  .container {
+    max-width: 480px;
+    margin: 30px auto;
+    background: rgba(255, 209, 122, 0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 0 20px 6px #b75718aa;
+    color: #742c17;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+  h1 {
+    text-align: center;
+    font-weight: 900;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    font-family: 'Amiri', serif;
+    text-shadow: 1px 1px 3px #742c17;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  nav button {
+    background-color: #742c17;
+    color: #f9d37a;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 1rem;
+    box-shadow: 0 0 7px #b75718cc;
+    flex: 1;
+    margin: 0 3px;
+    transition: background-color 0.3s ease;
+  }
+  nav button:hover,
+  nav button.active {
+    background-color: #b75718;
+    color: #fff;
+  }
+  .balance {
+    background: #742c17;
+    color: #f9d37a;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  .packages {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-grow: 1;
+  }
+  .package {
+    background: #f9d37a;
+    color: #742c17;
+    padding: 15px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    border: 3px solid #742c17;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.3rem;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 2px 2px 7px #b75718cc;
+  }
+  .package:hover {
+    background: #eaa550;
+    transform: scale(1.05);
+  }
+  .package i {
+    font-size: 1.7rem;
+  }
+  .buy-button {
+    margin-top: 15px;
+    width: 100%;
+    background-color: #742c17;
+    color: #f9d37a;
+    border: none;
+    padding: 15px 0;
+    font-size: 1.5rem;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 900;
+    box-shadow: 0 0 10px #b75718bb;
+    transition: background-color 0.3s ease;
+  }
+  .buy-button:hover {
+    background-color: #b75718;
+  }
+  .message {
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    min-height: 30px;
+    text-align: center;
+  }
+  /* إخفاء الصفحات بشكل افتراضي */
+  .page {
+    display: none;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  .page.active {
+    display: flex;
+  }
+  form label {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 15px;
+  }
+  form input, form select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+    border: 2px solid #742c17;
+    font-size: 1.2rem;
+    font-family: 'Amiri', serif;
+    color: #742c17;
+  }
+  form button {
+    margin-top: 25px;
+  }
+  .history-item {
+    background: #f9d37a;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    color: #742c17;
+    font-weight: bold;
+    box-shadow: 2px 2px 7px #b75718cc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+  }
+  .history-item i {
+    font-size: 1.5rem;
+    color: green;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <button id="nav-home" class="active" onclick="navigateTo('home')">الصفحة الرئيسية</button>
+      <button id="nav-gems" onclick="navigateTo('gems')">
+        <i class="fa-solid fa-gem"></i> الجواهر
+      </button>
+      <button id="nav-uc" onclick="navigateTo('uc')">
+        <i class="fa-solid fa-coins"></i> الشدات
+      </button>
+      <button id="nav-payment" onclick="navigateTo('payment')">
+        <i class="fa-solid fa-credit-card"></i> الدفع
+      </button>
+      <button id="nav-history" onclick="navigateTo('history')">
+        <i class="fa-solid fa-clock-rotate-left"></i> الطلبات
+      </button>
+    </nav>
+
+    <!-- الصفحة الرئيسية -->
+    <section id="home" class="page active">
+      <h1>مرحبا بك في تطبيق مراكش ستور</h1>
+
+      <h2>تعريف التطبيق</h2>
+      <p>
+        تطبيق مراكش ستور هو منصة سهلة وسريعة لشحن الجواهر والشدات لألعابك المفضلة.
+        يمكنك شراء باقات متعددة بأسعار مناسبة، مع إمكانية الدفع بطرق مختلفة وبثقة تامة.
+      </p>
+
+      <h2>تعريف المطور</h2>
+      <p>
+        المطور: إلياس عشيوه، شاب مغربي عمره 17 سنة، مولع بالتقنية والبرمجة،
+        يهدف لتطوير تطبيقات بسيطة تساعد المستخدمين في حياتهم الرقمية.
+      </p>
+
+      <h2>رسالة</h2>
+      <p>
+         نسعى لتقديم أفضل تجربة لمستخدمي الألعاب الإلكترونية مع تصميم مريح وأداء ممتاز. شكراً لاستخدامكم تطبيقنا
+         تحت شعار ديما كوكب!
+      </p>
+    </section>
+
+    <!-- صفحة الجواهر -->
+    <section id="gems" class="page">
+      <h1><i class="fa-solid fa-gem"></i> شحن الجواهر</h1>
+      <div class="balance">رصيدك الحالي: <span id="gemCount">0</span> جوهرة</div>
+      <div class="packages">
+        <div class="package" data-price="50" data-amount="500">
+          <i class="fa-solid fa-gem"></i> باقة 500 جوهرة - 50 درهم
+        </div>
+        <div class="package" data-price="100" data-amount="1200">
+          <i class="fa-solid fa-gem"></i> باقة 1200 جوهرة - 100 درهم
+        </div>
+        <div class="package" data-price="200" data-amount="2500">
+          <i class="fa-solid fa-gem"></i> باقة 2500 جوهرة - 200 درهم
+        </div>
+      </div>
+      <button class="buy-button" disabled id="buyGemBtn">شراء الجواهر</button>
+      <div class="message" id="gemMessage"></div>
+    </section>
+
+    <!-- صفحة الشدات -->
+    <section id="uc" class="page">
+      <h1><i class="fa-solid fa-coins"></i> شحن الشدات</h1>
+      <div class="balance">رصيدك الحالي: <span id="ucCount">0</span> شدات</div>
+      <div class="packages">
+        <div class="package" data-price="60" data-amount="600">
+          <i class="fa-solid fa-coins"></i> باقة 600 شدات - 60 درهم
+        </div>
+        <div class="package" data-price="110" data-amount="1300">
+          <i class="fa-solid fa-coins"></i> باقة 1300 شدات - 110 درهم
+        </div>
+        <div class="package" data-price="220" data-amount="2700">
+          <i class="fa-solid fa-coins"></i> باقة 2700 شدات - 220 درهم
+        </div>
+      </div>
+      <button class="buy-button" disabled id="buyUcBtn">شراء الشدات</button>
+      <div class="message" id="ucMessage"></div>
+    </section>
+
+    <!-- صفحة الدفع -->
+    <section id="payment" class="page">
+      <h1><i class="fa-solid fa-credit-card"></i> الدفع</h1>
+      <form id="paymentForm">
+        <label for="paymentMethod">طريقة الدفع:</label>
+        <select id="paymentMethod" required>
+          <option value="">اختر طريقة الدفع</option>
+          <option value="visa">بطاقة فيزا</option>
+          <option value="mastercard">ماستر كارد</option>
+          <option value="paypal">باي بال</option>
+          <option value="mada">مدى</option>
+        </select>
+
+        <label for="cardNumber">رقم البطاقة:</label>
+        <input
+          type="text"
+          id="cardNumber"
+          maxlength="16"
+          placeholder="ادخل رقم البطاقة"
+          required
+        />
+
+        <label for="expiryDate">تاريخ الانتهاء:</label>
+        <input
+          type="month"
+          id="expiryDate"
+          required
+          min="2024-06"
+        />
+
+        <label for="cvv">CVV:</label>
+        <input
+          type="text"
+          id="cvv"
+          maxlength="4"
+          placeholder="ادخل رمز CVV"
+          required
+        />
+
+        <button type="submit" class="buy-button">تأكيد الدفع</button>
+      </form>
+      <div class="message" id="paymentMessage"></div>
+    </section>
+
+    <!-- صفحة الطلبات -->
+    <section id="history" class="page">
+      <h1><i class="fa-solid fa-clock-rotate-left"></i> تاريخ الطلبات</h1>
+      <div id="ordersList">
+        <p>لا توجد طلبات حتى الآن.</p>
+      </div>
+    </section>
+  </div>
+
+<script>
+  // التنقل بين الصفحات
+  function navigateTo(pageId) {
+    const pages = document.querySelectorAll('.page');
+    pages.forEach((page) => {
+      page.classList.remove('active');
+    });
+    document.getElementById(pageId).classList.add('active');
+
+    // تحديث زر التنقل النشط
+    const navButtons = document.querySelectorAll('nav button');
+    navButtons.forEach((btn) => btn.classList.remove('active'));
+    document.getElementById('nav-' + pageId).classList.add('active');
+
+    // مسح الرسائل
+    clearMessages();
+
+    // تعطيل أزرار الشراء عند التنقل
+    disableBuyButtons();
+  }
+
+  function clearMessages() {
+    document.getElementById('gemMessage').textContent = '';
+    document.getElementById('ucMessage').textContent = '';
+    document.getElementById('paymentMessage').textContent = '';
+  }
+
+  function disableBuyButtons() {
+    document.getElementById('buyGemBtn').disabled = true;
+    document.getElementById('buyUcBtn').disabled = true;
+  }
+
+  // التعامل مع اختيار باقة الجواهر
+  let selectedGemPackage = null;
+  const gemPackages = document.querySelectorAll('#gems .package');
+  gemPackages.forEach(pkg => {
+    pkg.addEventListener('click', () => {
+      gemPackages.forEach(p => p.classList.remove('selected'));
+      pkg.classList.add('selected');
+      selectedGemPackage = pkg;
+      document.getElementById('buyGemBtn').disabled = false;
+      document.getElementById('gemMessage').textContent = '';
+    });
+  });
+
+  // التعامل مع شراء الجواهر
+  const buyGemBtn = document.getElementById('buyGemBtn');
+  let gemCount = 2500;
+  buyGemBtn.addEventListener('click', () => {
+    if (!selectedGemPackage) return;
+    const price = parseInt(selectedGemPackage.dataset.price);
+    const amount = parseInt(selectedGemPackage.dataset.amount);
+    gemCount += amount;
+    document.getElementById('gemCount').textContent = gemCount;
+    document.getElementById('gemMessage').textContent = `تم شراء ${amount} جوهرة مقابل ${price} درهم بنجاح!`;
+    selectedGemPackage.classList.remove('selected');
+    selectedGemPackage = null;
+    buyGemBtn.disabled = true;
+  });
+
+  // التعامل مع اختيار باقة الشدات
+  let selectedUcPackage = null;
+  const ucPackages = document.querySelectorAll('#uc .package');
+  ucPackages.forEach(pkg => {
+    pkg.addEventListener('click', () => {
+      ucPackages.forEach(p => p.classList.remove('selected'));
+      pkg.classList.add('selected');
+      selectedUcPackage = pkg;
+      document.getElementById('buyUcBtn').disabled = false;
+      document.getElementById('ucMessage').textContent = '';
+    });
+  });
+
+  // التعامل مع شراء الشدات
+  const buyUcBtn = document.getElementById('buyUcBtn');
+  let ucCount = 1500;
+  buyUcBtn.addEventListener('click', () => {
+    if (!selectedUcPackage) return;
+    const price = parseInt(selectedUcPackage.dataset.price);
+    const amount = parseInt(selectedUcPackage.dataset.amount);
+    ucCount += amount;
+    document.getElementById('ucCount').textContent = ucCount;
+    document.getElementById('ucMessage').textContent = `تم شراء ${amount} شدات مقابل ${price} درهم بنجاح!`;
+    selectedUcPackage.classList.remove('selected');
+    selectedUcPackage = null;
+    buyUcBtn.disabled = true;
+  });
+
+  // التعامل مع نموذج الدفع
+  const paymentForm = document.getElementById('paymentForm');
+  paymentForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // تحقق من صحة المدخلات بشكل مبسط
+    const method = document.getElementById('paymentMethod').value;
+    const cardNumber = document.getElementById('cardNumber').value.trim();
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value.trim();
+
+    if (!method || cardNumber.length !== 16 || !expiryDate || (cvv.length < 3 || cvv.length > 4)) {
+      document.getElementById('paymentMessage').textContent =
+        'يرجى ملء جميع الحقول بشكل صحيح.';
+      return;
+    }
+
+    document.getElementById('paymentMessage').textContent = 'جاري معالجة الدفع...';
+
+    // محاكاة الدفع (تأخير بسيط)
+    setTimeout(() => {
+      document.getElementById('paymentMessage').textContent = 'تم الدفع بنجاح، شكراً لك!';
+      paymentForm.reset();
+    }, 1500);
+  });
+</script>
+</body>
+</html>
